@@ -11,7 +11,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static ru.yandex.praktikum.pageObject.constants.CreateOrderButton.DOWN_BUTTON;
 import static ru.yandex.praktikum.pageObject.constants.CreateOrderButton.UP_BUTTON;
@@ -67,8 +66,8 @@ public class OrderCreateTest {
     // Установка и запуск тестового окружения перед тестом
     @Before
     public void startUp() {
-        WebDriverManager.chromedriver().setup();
-        driver = new ChromeDriver();
+        WebDriverManager.firefoxdriver().setup();
+        driver = new FirefoxDriver();
         driver.get(site);
     }
 
@@ -78,13 +77,15 @@ public class OrderCreateTest {
         driver.quit();
     }
 
-    // Тест создания заказа с использованием кнопки UP_BUTTON
+    // Переименованный тест создания заказа с параметрами
     @Test
-    public void testCreateOrderWithUpButton() {
+    public void testCreateOrderParameterized() {
+        // Переход на главную страницу и нажатие на кнопку "Создать заказ"
         new HomePage(driver)
                 .waitForLoadHomePage()
                 .clickCreateOrderButton(button);
 
+        // Заполнение формы информации о заказчике
         new AboutRenter(driver)
                 .waitForLoadOrderPage()
                 .inputName(name)
@@ -94,6 +95,7 @@ public class OrderCreateTest {
                 .inputTelephone(telephoneNumber)
                 .clickNextButton();
 
+        // Заполнение информации о самокате
         new AboutScooter(driver)
                 .waitAboutRentHeader()
                 .inputDate(date)
@@ -102,9 +104,11 @@ public class OrderCreateTest {
                 .inputComment(comment)
                 .clickButtonCreateOrder();
 
+        // Подтверждение заказа в всплывающем окне
         PopUpWindow popUpWindow = new PopUpWindow(driver);
         popUpWindow.clickButtonYes();
 
+        // Проверка, что заголовок после создания заказа содержит ожидаемый текст
         assertTrue(popUpWindow.getHeaderAfterCreateOrder().contains(expectedHeader));
     }
 }
